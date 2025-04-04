@@ -1,7 +1,10 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
+
+
 User = get_user_model()
+
 
 class Role(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -10,6 +13,7 @@ class Role(models.Model):
         return self.name
 
 class UserRolesPermissions(models.Model):
+    
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     

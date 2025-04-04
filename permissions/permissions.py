@@ -4,6 +4,8 @@ from .models import UserRolesPermissions
 class CanCreateTaskPermission(BasePermission):
     def has_permission(self, request, view):
         try:
+            if request.user.is_superuser or request.user.is_staff: 
+                return True
             user_permissions = UserRolesPermissions.objects.get(user=request.user)
             return user_permissions.can_create_task
         except UserRolesPermissions.DoesNotExist:
@@ -12,6 +14,8 @@ class CanCreateTaskPermission(BasePermission):
 class CanViewTaskPermission(BasePermission):
     def has_permission(self, request, view):
         try:
+            if request.user.is_superuser or request.user.is_staff: 
+                return True
             user_permissions = UserRolesPermissions.objects.get(user=request.user)
             return user_permissions.can_view_task
         except UserRolesPermissions.DoesNotExist:
@@ -20,6 +24,8 @@ class CanViewTaskPermission(BasePermission):
 class CanUpdateTaskPermission(BasePermission):
     def has_permission(self, request, view):
         try:
+            if request.user.is_superuser or request.user.is_staff: 
+                return True
             user_permissions = UserRolesPermissions.objects.get(user=request.user)
             return user_permissions.can_update_task
         except UserRolesPermissions.DoesNotExist:
@@ -28,6 +34,8 @@ class CanUpdateTaskPermission(BasePermission):
 class CanDeleteTaskPermission(BasePermission):
     def has_permission(self, request, view):
         try:
+            if request.user.is_superuser or request.user.is_staff: 
+                return True
             user_permissions = UserRolesPermissions.objects.get(user=request.user)
             return user_permissions.can_delete_task
         except UserRolesPermissions.DoesNotExist:
