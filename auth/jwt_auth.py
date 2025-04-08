@@ -1,17 +1,18 @@
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
+from django.urls import resolve
 import jwt
-from django.conf import settings
-from django.contrib.auth import get_user_model  
-
-User = get_user_model()
+from accounts.models import CustomUser
 
 class JWTAuthentication(BaseAuthentication):
     def authenticate(self, request):
+        print("JWTAuthentication.authenticate called")
+
         auth = request.headers.get('Authorization')
         
         if not auth:
-            raise AuthenticationFailed('Authorization header missing')
+            # raise AuthenticationFailed('Authorization header missing')
+            return None
 
         # Split the 'Authorization' header to extract the token
         parts = auth.split()
@@ -30,7 +31,10 @@ class JWTAuthentication(BaseAuthentication):
             raise AuthenticationFailed('Invalid token')
 
         # Get user from the payload
-        user = User.objects.get(id=payload['user_id'])
+        try:
+            user = CustomUser.objects.get(id=payload['user_id'])
+        except CustomUser.DoesNotExist:
+            raise AuthenticationFailed('User not found')
 
         # Return the user and None (since we don't need the credentials)
         return (user, None)

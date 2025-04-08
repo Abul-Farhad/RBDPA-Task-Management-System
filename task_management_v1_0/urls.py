@@ -20,7 +20,7 @@ from django.contrib import admin
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('tasks/', include('tasks.urls')),
-    path('permissions/', include('permissions.urls')),
-    path('accounts/', include('accounts.urls')),
+    path('api/tasks/', include('tasks.urls')),
+    path('api/permissions/', include('permissions.urls')),
+    path('api/accounts/', include('accounts.urls')),
 ]
