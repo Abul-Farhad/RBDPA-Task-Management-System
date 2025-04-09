@@ -1,0 +1,6 @@
+# Ignore the env file
+.env
+# Ignore the Pycache directory
+__pycache__/
+# Ignore the pyclient file
+pyclient.py

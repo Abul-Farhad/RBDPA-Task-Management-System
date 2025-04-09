@@ -5,7 +5,8 @@ from accounts.models import CustomUser
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from .models import CustomUser
-from permissions.models import UserRole, Role
+from permissions.models import UserRole, Role, Permission
+
 
 
 # # Inline model for showing/editing role and permissions inside User admin page
@@ -37,11 +38,7 @@ class UserAdmin(BaseUserAdmin):
         'is_staff', 
         'is_active',
         'get_role',
-        'can_create_task',
-        'can_view_task',
-        'can_update_task',
-        'can_delete_task',
-        'can_assign_team'
+        'get_permissions',
     ]
     search_fields = ['email']
 #     inlines = [UserRolesPermissionsInline]  # 👈 Show role & permissions inside user admin form
@@ -52,35 +49,20 @@ class UserAdmin(BaseUserAdmin):
         return urp.role.name if urp else '—'
     get_role.short_description = 'Role'
 
-    def can_create_task(self, obj):
+    def get_permissions(self, obj):
         urp = UserRole.objects.filter(user=obj).first()
-        return urp.role.can_create_task if urp else False
-    can_create_task.boolean = True
-    can_create_task.short_description = 'Create'
-    
-    def can_view_task(self, obj):
-        urp = UserRole.objects.filter(user=obj).first()
-        return urp.role.can_view_task if urp else False
-    can_view_task.boolean = True
-    can_view_task.short_description = 'View'
-
-    def can_update_task(self, obj):
-        urp = UserRole.objects.filter(user=obj).first()
-        return urp.role.can_update_task if urp else False
-    can_update_task.boolean = True
-    can_update_task.short_description = 'Update'
-
-    def can_delete_task(self, obj):
-        urp = UserRole.objects.filter(user=obj).first()
-        return urp.can_delete_task if urp else False
-    can_delete_task.boolean = True
-    can_delete_task.short_description = 'Delete'
-
-    def can_assign_team(self, obj):
-        urp = UserRole.objects.filter(user=obj).first()
-        return urp.role.can_assign_team if urp else False
-    can_assign_team.boolean = True
-    can_assign_team.short_description = 'Assign Team'
+        return ', '.join(urp.role.permissions) if urp else '—'
+    get_permissions.short_description = 'Permissions'
+    # === Custom filters ===
+    list_filter = (
+        'is_staff',
+        'is_active',
+        ('user_roles__role', admin.RelatedOnlyFieldListFilter),
+    )
+    # === Custom search fields ===
+    search_fields = ('email',)
+    # === Custom ordering ===
+    ordering = ('email',)
 
     # === Field layout in the admin form ===
     fieldsets = (

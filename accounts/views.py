@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import get_user_model
 import jwt,datetime
+import os
 
 User = get_user_model()
 
@@ -38,7 +39,8 @@ class LoginUserView(APIView):
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
                 'iat': datetime.datetime.utcnow()
             }
-            token = jwt.encode(payload, "secret", algorithm='HS256')
+            secret_key = os.getenv('JWT_SECRET_KEY')
+            token = jwt.encode(payload, secret_key, algorithm='HS256')
             response = Response()
             response.data = {
                 'message': 'Login successful!',
