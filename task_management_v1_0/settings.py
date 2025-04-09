@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,6 +43,9 @@ INSTALLED_APPS = [
     'tasks',
     'permissions',
     'corsheaders',
+    'channels',
+    'notifications',
+    
 ]
 
 MIDDLEWARE = [
@@ -50,19 +54,21 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',  # Now comes after JWTAuthenticationMiddleware
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'middleware.middleware.JWTAuthenticationMiddleware',
+    'middleware.middleware.JWTAuthenticationMiddleware',  # Move this before AuthenticationMiddleware
 ]
 
-ROOT_URLCONF = 'task_management_v1_0.urls'
 
+ROOT_URLCONF = 'task_management_v1_0.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [
+            BASE_DIR / 'templates',  # or any directory where your templates are stored
+        ],
+        'APP_DIRS': True,  # This allows Django to look for templates in app directories
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -74,7 +80,18 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'task_management_v1_0.wsgi.application'
+
+# WSGI_APPLICATION = 'task_management_v1_0.wsgi.application'
+ASGI_APPLICATION = 'task_management_v1_0.asgi.application'
+# Use Redis as the channel layer backend
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 
 # Database

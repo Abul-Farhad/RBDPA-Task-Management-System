@@ -8,11 +8,10 @@ class JWTAuthenticationMiddleware(MiddlewareMixin):
     def process_request(self, request):
        
         # List of public route names
-        public_routes = ['login', 'register']
+        public_routes = ['login', 'register', 'websocket_test']
 
         # Resolve the current route name
         resolver_match = resolve(request.path)
-        print(resolver_match)
         route_name = resolver_match.url_name  # Get the name of the route
 
         # Skip authentication for public routes
@@ -21,8 +20,7 @@ class JWTAuthenticationMiddleware(MiddlewareMixin):
 
         # Call the authenticate method directly
         jwt_auth = JWTAuthentication()
-        print("after jwt_auth")
         user, _ = jwt_auth.authenticate(request)
-        print("after and after jwt auth", user)
         # Attach the user to the request
         request.user = user
+        print(f"In middleware, User: {request.user}")

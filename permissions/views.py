@@ -7,32 +7,32 @@ from .models import UserRole, Role, User
 from django.shortcuts import get_object_or_404
 from permissions.permissions import HasRolePermission
 from .serializers import RoleSerializer
-
+from notifications.utils import send_notification
 
         
 class AssignRoleView(APIView):
-    # authentication_classes = [JWTAuthentication]
+    authentication_classes = [JWTAuthentication]
     permission_classes = [HasRolePermission]
 
     def post(self, request):
         
         user_id = request.data.get("user_id")
         role_id = request.data.get("role_id")
-
+        
         user = get_object_or_404(User, id=user_id)
         role = get_object_or_404(Role, id=role_id)
-
-        user_role_perm, _ = UserRole.objects.get_or_create(user=user)
-        user_role_perm.role = role
+        print(user, role)
+        user_role_perm, _ = UserRole.objects.get_or_create(user=user, role=role)
+        # user_role_perm.role = role
         user_role_perm.save()
-
+        send_notification(user.id, f"🎉 You have been assigned the role '{role.name}'.")
         return Response({"message": "Role assigned successfully."}, status=200)
 
 
 
 
 class CreateRoleView(APIView):
-    # authentication_classes = []
+    authentication_classes = [JWTAuthentication]
     permission_classes = [HasRolePermission]
     def post(self, request):
  
@@ -67,7 +67,7 @@ class CreateRoleView(APIView):
         )
         
 class UpdateRoleView(APIView):
-    # authentication_classes = [JWTAuthentication]
+    authentication_classes = [JWTAuthentication]
     permission_classes = [HasRolePermission]
 
     def patch(self, request):
@@ -101,7 +101,7 @@ class UpdateRoleView(APIView):
         
         
 class DeleteRoleView(APIView):
-    # authentication_classed = [JWTAuthentication]
+    authentication_classed = [JWTAuthentication]
     permission_classes = [HasRolePermission]
     
     def delete(self, request):
